@@ -1,4 +1,4 @@
-name: Build Android 15 ROM
+name: Build Android 15 ROM with Debugging
 
 on:
   push:
@@ -21,32 +21,52 @@ jobs:
 
       - name: Create bin directory and install Repo
         run: |
+          set -x
           mkdir -p ~/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
+          echo "Repo installed"
+          set +x
 
       - name: Set up authentication
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          set -x
           git config --global credential.helper 'cache --timeout=3600'
           git config --global credential.username "andrealinux"
           git config --global credential.password "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"
+          echo "Authentication set up"
+          set +x
 
       - name: Initialize Repo
         run: |
+          set -x
           mkdir -p ~/android
           cd ~/android
           ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15.0.0_r1
-          ~/bin/repo sync
+          ~/bin/repo sync || { echo "Repo sync failed"; exit 1; }
+          echo "Repo initialized and synced"
+          set +x
+
+      - name: Apply Monthly Patch
+        run: |
+          set -x
+          cd ~/android
+          repo sync -c --no-clone-bundle --no-tags -j8 --optimized-fetch --prune --force-sync || { echo "Monthly patch application failed"; exit 1; }
+          source build/envsetup.sh
+          lunch aosp_vayu-userdebug
+          echo "Monthly patch applied and lunch command executed"
+          set +x
 
       - name: Build ROM
         run: |
+          set -x
           cd ~/android
-          source build/envsetup.sh
-          lunch aosp_vayu-userdebug
-          make -j$(nproc)
+          make -j$(nproc) || { echo "Build failed"; exit 1; }
+          echo "Build completed"
+          set +x
 
       - name: Upload ROM
         uses: actions/upload-artifact@v4
