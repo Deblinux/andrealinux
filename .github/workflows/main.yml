@@ -26,6 +26,9 @@ jobs:
           chmod a+x ~/bin/repo
 
       - name: Set up authentication
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global credential.helper 'cache --timeout=3600'
           git config --global credential.username "andrealinux"
