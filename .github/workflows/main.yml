@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir -p ~/android
           cd ~/android
-          ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15
+          ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15.0.0_r1
           ~/bin/repo sync
 
       - name: Build ROM
