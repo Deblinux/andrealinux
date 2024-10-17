@@ -1,0 +1,40 @@
+name: Build Android 15 ROM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Initialize Repo
+        run: |
+          mkdir -p ~/android
+          cd ~/android
+          repo init -u https://android.googlesource.com/platform/manifest -b android-15
+          repo sync
+
+      - name: Build ROM
+        run: |
+          cd ~/android
+          source build/envsetup.sh
+          lunch aosp_vayu-userdebug
+          make -j$(nproc)
+
+      - name: Upload ROM
+        uses: actions/upload-artifact@v2
+        with:
+          name: ROM
+          path: ~/android/out/target/product/vayu/ROM.zip
