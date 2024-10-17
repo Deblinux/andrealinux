@@ -19,12 +19,17 @@ jobs:
           distribution: 'zulu'
           java-version: '8'
 
+      - name: Install Repo
+        run: |
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+
       - name: Initialize Repo
         run: |
           mkdir -p ~/android
           cd ~/android
-          repo init -u https://android.googlesource.com/platform/manifest -b android-15
-          repo sync
+          ~/bin/repo init -u https://android.googlesource.com/platform/manifest -b android-15
+          ~/bin/repo sync
 
       - name: Build ROM
         run: |
