@@ -19,8 +19,9 @@ jobs:
           distribution: 'zulu'
           java-version: '8'
 
-      - name: Install Repo
+      - name: Create bin directory and install Repo
         run: |
+          mkdir -p ~/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
 
