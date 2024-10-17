@@ -25,6 +25,12 @@ jobs:
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
 
+      - name: Set up authentication
+        run: |
+          git config --global credential.helper 'cache --timeout=3600'
+          git config --global credential.username "andrealinux"
+          git config --global credential.password "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"
+
       - name: Initialize Repo
         run: |
           mkdir -p ~/android
